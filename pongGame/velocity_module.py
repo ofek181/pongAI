@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class Velocity(metaclass=ABC):
+class Velocity(ABC):
     """
         A class for implementing x,y velocity on the screen.
         ----------------------------
@@ -14,21 +14,21 @@ class Velocity(metaclass=ABC):
         ----------------------------
         Methods
         ----------------------------
-        __init__(self):
+        __init__(self, x_vel, y_vel):
             Constructs all the necessary attributes for the Velocity object.
         set_vel(self):
             abstract method for setting the velocity.
     """
 
-    def __init__(self):
+    def __init__(self, x_vel: int = 10, y_vel: int = 0):
         """
             Constructs all the necessary attributes for the Velocity object.
         """
-        self.x_vel = 0
-        self.y_vel = 0
+        self.x_vel = x_vel
+        self.y_vel = y_vel
 
     @abstractmethod
-    def set_vel(self):
+    def _set_velocity(self, x_vel: int, y_vel: int):
         """
             Abstract method for setting velocity to later be implemented.
         """
