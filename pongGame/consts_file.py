@@ -17,3 +17,8 @@ class DisplayConsts:
 class AudioConsts:
     GAME_OVER_AUDIO = os.path.join(local_dir_audio, 'game_over.wav')
     SCORE_AUDIO = os.path.join(local_dir_audio, 'score.wav')
+
+
+class BallConsts:
+    BALL_RADIUS = 30
+

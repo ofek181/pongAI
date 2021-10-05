@@ -1,5 +1,5 @@
 import pygame
-from consts_file import DisplayConsts, AudioConsts
+from pongGame.consts_file import DisplayConsts
 
 
 class Display:
@@ -51,12 +51,21 @@ class Display:
         self.screen.blit(surface, rect)
         pygame.display.update()  # update the screen
 
-    def animate_game(self, paddle_left, paddle_right, ball):
-        """
-            Implements the game animation on the screen attribute.
-                Parameters:
-                    paddle_left : left paddle of the game.
-                    paddle_right: right paddle of the game.
-                    ball: ball of the game.
-        """
-        pass
+    # def animate_game(self, paddle_left, paddle_right, ball):
+    #     """
+    #         Implements the game animation on the screen attribute.
+    #             Parameters:
+    #                 paddle_left : left paddle of the game.
+    #                 paddle_right: right paddle of the game.
+    #                 ball: ball of the game.
+    #     """
+    #     pass
+
+    def animate_game(self, ball):
+        # self.screen.blit((0, 0, 0)), (0, 0))  # draw background
+        pygame.draw.circle(self.screen, (255, 255, 255), (ball.x_pos, ball.y_pos), ball.m_radius)
+        print(ball.x_vel)
+
+        pygame.time.Clock().tick(DisplayConsts.FPS)  # respect fps for screen updates
+        pygame.display.update()  # update the screen
+
