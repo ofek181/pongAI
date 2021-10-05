@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class Position(metaclass=ABC):
+class Position(ABC):
     """
         A class for implementing x,y position on the screen
         ----------------------------
@@ -14,20 +14,20 @@ class Position(metaclass=ABC):
         ----------------------------
         Methods
         ----------------------------
-        __init__(self):
+        __init__(self, x_pos, y_pos):
             Constructs all the necessary attributes for the Position object.
         set_pos(self):
             abstract method for setting the attributes
     """
-    def __init__(self):
+    def __init__(self, x_pos: int, y_pos: int):
         """
             Constructs all the necessary attributes for the Position object.
         """
-        self.x_pos = 0
-        self.y_pos = 0
+        self.x_pos = x_pos
+        self.y_pos = y_pos
 
     @abstractmethod
-    def set_pos(self):
+    def _set_position(self, x_pos: int, y_pos: int):
         """
             Abstract method for setting position to later be implemented.
         """
