@@ -1,6 +1,6 @@
-from pongGame.consts_file import PaddleConsts
-from pongGame.position_module import Position
-from pongGame.velocity_module import Velocity
+from .consts_file import PaddleConsts
+from .position_module import Position
+from .velocity_module import Velocity
 
 
 class Paddle(Position, Velocity):

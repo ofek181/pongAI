@@ -1,5 +1,5 @@
 import pygame
-from pongGame.consts_file import DisplayConsts
+from .consts_file import DisplayConsts
 
 
 class Display:
