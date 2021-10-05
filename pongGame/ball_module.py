@@ -30,23 +30,38 @@ class Ball(Position, Velocity):
          sets the radius of the ball.
     """
     def __init__(self):
+        """
+            Constructs all the necessary attributes for the Ball object.
+        """
         Position.__init__(self, x_pos=100, y_pos=200)
         Velocity.__init__(self, x_vel=10, y_vel=0)
         self.__set_radius()
 
     def move(self):
+        """
+            Implements the movement of the Ball object.
+        """
         self.x_pos = self.x_pos + self.x_vel
         self.y_pos = self.y_pos + self.y_vel
 
     def _set_position(self, x_pos: int, y_pos: int):
+        """
+            Sets Position of the Ball object.
+        """
         self.x_pos = x_pos
         self.y_pos = y_pos
 
     def _set_velocity(self, x_vel: int, y_vel: int):
+        """
+            Sets Velocity of the Ball object.
+        """
         self.x_vel = x_vel
         self.y_vel = y_vel
 
     def __set_radius(self):
+        """
+            Sets radius of the Ball object.
+        """
         self.m_radius = BallConsts.BALL_RADIUS
 
 
