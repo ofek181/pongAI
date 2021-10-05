@@ -4,8 +4,8 @@ local_dir_audio = os.path.join(os.path.dirname(__file__), "audio")
 
 class DisplayConsts:
     FPS = 30
-    SCREEN_WIDTH = 1000
-    SCREEN_HEIGHT = 500
+    SCREEN_WIDTH = 950
+    SCREEN_HEIGHT = 550
     FONT_COLOR = (255, 255, 255)
     GAME_OVER_FONT_COLOR = (200, 40, 80)
     FONT_SIZE = 70
@@ -20,7 +20,7 @@ class AudioConsts:
 
 
 class BallConsts:
-    BALL_RADIUS = 30
+    BALL_RADIUS = 10
     BALL_STARTING_POSITION_X = 100
     BALL_STARTING_POSITION_Y = 200
     BALL_STARTING_VELOCITY_X = 10
@@ -28,7 +28,7 @@ class BallConsts:
 
 
 class PaddleConsts:
-    PADDLE_SIZE = 30
+    PADDLE_SIZE = [10, 60]
 
 
 

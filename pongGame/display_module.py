@@ -27,7 +27,7 @@ class Display:
             Constructs all the necessary attributes for the Display object.
         """
         pygame.init()
-        self.screen = pygame.display.set_mode((DisplayConsts.SCREEN_HEIGHT, DisplayConsts.SCREEN_HEIGHT))
+        self.screen = pygame.display.set_mode((DisplayConsts.SCREEN_WIDTH, DisplayConsts.SCREEN_HEIGHT))
 
     def show_game_over(self):
         """
@@ -61,10 +61,16 @@ class Display:
     #     """
     #     pass
 
-    def animate_game(self, ball):
-        # self.screen.blit((0, 0, 0)), (0, 0))  # draw background
+    def animate_game(self, ball, paddle_bot, paddle_top):
         pygame.draw.circle(self.screen, (255, 255, 255), (ball.x_pos, ball.y_pos), ball.m_radius)
-        print(ball.x_vel)
+
+        paddle_rect_bot = pygame.Rect(paddle_bot.x_pos, paddle_bot.y_pos,
+                                      paddle_bot.m_size[0], paddle_bot.m_size[1])
+        pygame.draw.rect(self.screen, (255, 255, 255), paddle_rect_bot)
+
+        paddle_rect_top = pygame.Rect(paddle_top.x_pos, paddle_top.y_pos,
+                                      paddle_top.m_size[0], paddle_top.m_size[1])
+        pygame.draw.rect(self.screen, (255, 255, 255), paddle_rect_top)
 
         pygame.time.Clock().tick(DisplayConsts.FPS)  # respect fps for screen updates
         pygame.display.update()  # update the screen
