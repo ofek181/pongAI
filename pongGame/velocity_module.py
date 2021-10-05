@@ -20,7 +20,7 @@ class Velocity(ABC):
             abstract method for setting the velocity.
     """
 
-    def __init__(self, x_vel: int = 10, y_vel: int = 0):
+    def __init__(self, x_vel: float = 10, y_vel: float = 0):
         """
             Constructs all the necessary attributes for the Velocity object.
         """
@@ -28,7 +28,7 @@ class Velocity(ABC):
         self.y_vel = y_vel
 
     @abstractmethod
-    def _set_velocity(self, x_vel: int, y_vel: int):
+    def _set_velocity(self, x_vel: float, y_vel: float):
         """
             Abstract method for setting velocity to later be implemented.
         """
