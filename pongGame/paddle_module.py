@@ -1,4 +1,4 @@
-from .consts_file import PaddleConsts
+from .consts_file import PaddleConsts, DisplayConsts
 from .position_module import Position
 from .velocity_module import Velocity
 
@@ -16,9 +16,9 @@ class Paddle(Position, Velocity):
         ----------------------------
         __init__(self):
          Constructs all the necessary attributes for the Paddle object.
-        __set_position(self):
+        _set_position(self):
          sets the initial Position of the Paddle.
-        __set_velocity(self):
+        _set_velocity(self):
          sets the initial Velocity of the Paddle.
         __set_size(self):
          sets the size of the Paddle.
@@ -32,13 +32,6 @@ class Paddle(Position, Velocity):
         Position.__init__(self, x_pos=x_pos, y_pos=y_pos)
         Velocity.__init__(self, x_vel=0, y_vel=0)
         self.__set_size()
-
-    def move(self):
-        """
-            Implements the movement of the Paddle object.
-        """
-        self.x_pos = self.x_pos + self.x_vel
-        self.y_pos = self.y_pos + self.y_vel
 
     def _set_position(self, x_pos: int, y_pos: int):
         """
@@ -59,5 +52,16 @@ class Paddle(Position, Velocity):
             Sets size of the Paddle object.
         """
         self.m_size = PaddleConsts.PADDLE_SIZE
+
+    def move(self):
+        """
+            Implements the movement of the Paddle object.
+        """
+        if self.y_pos < 0 or self.y_pos + self.m_size[1] > DisplayConsts.SCREEN_HEIGHT:  # movement is out of bounds
+            self.x_pos = self.x_pos
+            self.y_pos = self.y_pos
+        else:
+            self.x_pos = self.x_pos + self.x_vel
+            self.y_pos = self.y_pos + self.y_vel
 
 
