@@ -60,11 +60,11 @@ class Physics:
         if ball.x_pos - ball.m_radius == paddle.x_pos + paddle.m_size[0]:  # left paddle intersection
             collision = True
         if collision:
-            # dist is positive if the ball is on the top of the paddle
+            # dist is positive if the ball is on the bottom of the paddle
             normalized_dist = (ball.y_pos - (paddle.y_pos + paddle.m_size[1] / 2)) / paddle.m_size[1]
 
             if abs(normalized_dist) > 1/2:
-                raise Exception("Distance from paddle center during intersection is not legal")
+                raise Exception("Distance during intersection Error")
 
         return collision, normalized_dist
 
