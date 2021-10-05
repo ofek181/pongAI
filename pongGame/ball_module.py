@@ -33,8 +33,10 @@ class Ball(Position, Velocity):
         """
             Constructs all the necessary attributes for the Ball object.
         """
-        Position.__init__(self, x_pos=100, y_pos=200)
-        Velocity.__init__(self, x_vel=10, y_vel=0)
+        Position.__init__(self, BallConsts.BALL_STARTING_POSITION_X,
+                          BallConsts.BALL_STARTING_POSITION_Y)
+        Velocity.__init__(self, BallConsts.BALL_STARTING_VELOCITY_X,
+                          BallConsts.BALL_STARTING_VELOCITY_Y)
         self.__set_radius()
 
     def move(self):

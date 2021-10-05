@@ -21,4 +21,13 @@ class AudioConsts:
 
 class BallConsts:
     BALL_RADIUS = 30
+    BALL_STARTING_POSITION_X = 100
+    BALL_STARTING_POSITION_Y = 200
+    BALL_STARTING_VELOCITY_X = 10
+    BALL_STARTING_VELOCITY_Y = 0
+
+
+class PaddleConsts:
+    PADDLE_SIZE = 30
+
 
