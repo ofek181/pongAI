@@ -16,9 +16,9 @@ class Ball(Position, Velocity):
         ----------------------------
         __init__(self):
          Constructs all the necessary attributes for the Ball object.
-        __set_position(self):
+        _set_position(self):
          sets the initial Position of the ball.
-        __set_velocity(self):
+        _set_velocity(self):
          sets the initial Velocity of the ball.
         __set_radius(self):
          sets the radius of the ball.
