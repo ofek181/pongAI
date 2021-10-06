@@ -16,20 +16,24 @@ class DisplayConsts:
 
 
 class AudioConsts:
-    GAME_OVER_AUDIO = os.path.join(local_dir_audio, 'game_over.wav')
+    HIT_AUDIO = os.path.join(local_dir_audio, 'hit.wav')
     SCORE_AUDIO = os.path.join(local_dir_audio, 'score.wav')
 
 
 class BallConsts:
     BALL_RADIUS = 10
-    BALL_STARTING_POSITION_X = 100
-    BALL_STARTING_POSITION_Y = 200
+    BALL_STARTING_POSITION_X = DisplayConsts.SCREEN_WIDTH // 2
+    BALL_STARTING_POSITION_Y = DisplayConsts.SCREEN_HEIGHT // 2
     BALL_STARTING_VELOCITY_X = 10
     BALL_STARTING_VELOCITY_Y = 0
 
 
 class PaddleConsts:
     PADDLE_SIZE = [10, 60]
+
+
+class GameConsts:
+    MAX_SCORE = 10
 
 
 class Action(Enum):

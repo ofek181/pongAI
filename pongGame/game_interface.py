@@ -13,14 +13,14 @@ class Game(ABC):
         pass
 
     @abstractmethod
-    def is_game_over(self):
+    def _is_game_over(self):
         """
             Checks for game over state.
         """
         pass
 
     @abstractmethod
-    def calc_frame(self):
+    def _calc_frame(self):
         """
             Calculates a single frame of the game.
         """
