@@ -66,17 +66,19 @@ class Display:
                     paddle_right: right paddle of the game.
                     ball: ball of the game.
         """
+        # clear screen
+        self.screen.fill((0, 0, 0))
+
         # draw the ball
         pygame.draw.circle(self.screen, DisplayConsts.FONT_COLOR, (ball.x_pos, ball.y_pos), ball.m_radius)
 
         # draw the left and right paddles
-        paddle_rect_bot = pygame.Rect(paddle_left.x_pos, paddle_left.y_pos,
-                                      paddle_left.m_size[0], paddle_left.m_size[1])
-        pygame.draw.rect(self.screen, DisplayConsts.FONT_COLOR, paddle_rect_bot)
-
-        paddle_rect_top = pygame.Rect(paddle_right.x_pos, paddle_right.y_pos,
-                                      paddle_right.m_size[0], paddle_right.m_size[1])
-        pygame.draw.rect(self.screen, DisplayConsts.FONT_COLOR, paddle_rect_top)
+        rect = pygame.Rect(paddle_left.x_pos, paddle_left.y_pos,
+                           paddle_left.m_size[0], paddle_left.m_size[1])
+        pygame.draw.rect(self.screen, DisplayConsts.FONT_COLOR, rect)
+        rect = pygame.Rect(paddle_right.x_pos, paddle_right.y_pos,
+                           paddle_right.m_size[0], paddle_right.m_size[1])
+        pygame.draw.rect(self.screen, DisplayConsts.FONT_COLOR, rect)
 
         # draw middle line
         pygame.draw.line(self.screen, DisplayConsts.LINE_FONT,
