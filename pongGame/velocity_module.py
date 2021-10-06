@@ -27,9 +27,3 @@ class Velocity(ABC):
         self.x_vel = x_vel
         self.y_vel = y_vel
 
-    @abstractmethod
-    def _set_velocity(self, x_vel: float, y_vel: float):
-        """
-            Abstract method for setting velocity to later be implemented.
-        """
-        pass
