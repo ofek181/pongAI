@@ -30,7 +30,7 @@ class Paddle(Position, Velocity):
             Constructs all the necessary attributes for the Paddle object.
         """
         Position.__init__(self, x_pos=x_pos, y_pos=y_pos)
-        Velocity.__init__(self, x_vel=0, y_vel=15)
+        Velocity.__init__(self, x_vel=0, y_vel=PaddleConsts.PADDLE_VELOCITY)
         self.__set_size()
 
     def _set_position(self, x_pos: int, y_pos: int):
@@ -53,13 +53,18 @@ class Paddle(Position, Velocity):
         """
         self.m_size = PaddleConsts.PADDLE_SIZE
 
-    def move(self, y_dist: int):
+    def move(self, y_vel: int):
         """
             Implements the movement of the Paddle object.
         """
-        if self.y_pos < 0 or self.y_pos + self.m_size[1] > DisplayConsts.SCREEN_HEIGHT:  # movement is out of bounds
+        # player wants to move down when impossible
+        if self.y_pos + self.m_size[1] >= DisplayConsts.SCREEN_HEIGHT and y_vel > 0:
             self._set_position(self.x_pos, self.y_pos)
+        # player wants to move up when impossible
+        elif self.y_pos <= 0 and y_vel < 0:
+            self._set_position(self.x_pos, self.y_pos)
+        # legal action
         else:
-            self._set_position(self.x_pos, self.y_pos + y_dist)
+            self._set_position(self.x_pos, self.y_pos + y_vel)
 
 
