@@ -32,7 +32,7 @@ class PaddleConsts:
     PADDLE_SIZE = [10, 60]
 
 
-class EventConsts(Enum):
+class Action(Enum):
     NO_ACTION = 0
     LEFT_PADDLE_MOVE_UP = 1
     LEFT_PADDLE_MOVE_DOWN = 2

@@ -1,6 +1,6 @@
 import pygame
 import sys
-from .consts_file import EventConsts
+from .consts_file import Action
 
 
 class EventHandler:
@@ -26,18 +26,18 @@ class EventHandler:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    return EventConsts.QUIT.value
+                    return Action.QUIT.value
                     # pygame.event.post(pygame.event.Event(pygame.QUIT))
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
-            return EventConsts.LEFT_PADDLE_MOVE_UP.value
+            return Action.LEFT_PADDLE_MOVE_UP.value
         if keys[pygame.K_s]:
-            return EventConsts.LEFT_PADDLE_MOVE_DOWN.value
+            return Action.LEFT_PADDLE_MOVE_DOWN.value
         if keys[pygame.K_UP]:
-            return EventConsts.RIGHT_PADDLE_MOVE_UP.value
+            return Action.RIGHT_PADDLE_MOVE_UP.value
         if keys[pygame.K_DOWN]:
-            return EventConsts.RIGHT_PADDLE_MOVE_DOWN.value
+            return Action.RIGHT_PADDLE_MOVE_DOWN.value
 
-        return EventConsts.NO_ACTION.value
+        return Action.NO_ACTION.value
 
