@@ -15,7 +15,7 @@ class EventHandler:
     """
 
     @staticmethod
-    def handle_left_events() -> int:
+    def handle_left_events() -> Action:
         """
         Handles the user's inputs during the game.
         Returns
@@ -28,19 +28,19 @@ class EventHandler:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    return Action.QUIT.value
+                    return Action.QUIT
                     # pygame.event.post(pygame.event.Event(pygame.QUIT))
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
-            return Action.LEFT_PADDLE_MOVE_UP.value
+            return Action.MOVE_UP
         if keys[pygame.K_s]:
-            return Action.LEFT_PADDLE_MOVE_DOWN.value
+            return Action.MOVE_DOWN
 
-        return Action.NO_ACTION.value
+        return Action.NO_ACTION
 
     @staticmethod
-    def handle_right_events() -> int:
+    def handle_right_events() -> Action:
         """
         Handles the user's inputs during the game.
         Returns
@@ -53,14 +53,14 @@ class EventHandler:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    return Action.QUIT.value
+                    return Action.QUIT
                     # pygame.event.post(pygame.event.Event(pygame.QUIT))
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_UP]:
-            return Action.RIGHT_PADDLE_MOVE_UP.value
+            return Action.MOVE_UP
         if keys[pygame.K_DOWN]:
-            return Action.RIGHT_PADDLE_MOVE_DOWN.value
+            return Action.MOVE_DOWN
 
-        return Action.NO_ACTION.value
+        return Action.NO_ACTION
 
