@@ -6,38 +6,31 @@ class Audio:
     """
         A class to implement the audio of the game.
         ----------------------------
-        Attributes
-        ----------------------------
-        channel : pygame.mixer object
-         the single channel of audio used in the game.
-        ----------------------------
         Methods
         ----------------------------
-        __init__(self):
-         Constructs all the necessary attributes for the Audio object.
         sound_score(self):
          Play the scoring sound during goal.
         sound_hit(self, score):
          Play the hitting sound during ball paddle intersection.
     """
-    def __init__(self):
-        """
-            Constructs all the necessary attributes for the Audio object.
-        """
-        pygame.mixer.init()
-        self.channel = pygame.mixer.Channel(0)
 
-    def sound_score(self):
+    @staticmethod
+    def sound_score():
         """
             Play the scoring sound.
         """
+        pygame.mixer.init()
+        channel = pygame.mixer.Channel(0)
         sound = pygame.mixer.Sound(AudioConsts.SCORE_AUDIO)
-        self.channel.play(sound)
+        channel.play(sound)
 
-    def sound_hit(self):
+    @staticmethod
+    def sound_hit():
         """
             Play the hitting sound.
         """
+        pygame.mixer.init()
+        channel = pygame.mixer.Channel(0)
         sound = pygame.mixer.Sound(AudioConsts.HIT_AUDIO)
-        self.channel.play(sound)
+        channel.play(sound)
 
