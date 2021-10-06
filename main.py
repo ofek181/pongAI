@@ -9,7 +9,9 @@ def main():
     paddle_top = Paddle(x_pos=50, y_pos=200)
     display = Display()
     while True:
-        display.animate_game(ball, paddle_bot, paddle_top)
+        display.animate_game(paddle_bot, paddle_top, ball)
+        display.show_score(2, 4)
+        display.show_winner("player 1 wins!")
 
 
 if __name__ == '__main__':

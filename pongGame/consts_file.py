@@ -8,11 +8,11 @@ class DisplayConsts:
     SCREEN_WIDTH = 950
     SCREEN_HEIGHT = 550
     FONT_COLOR = (255, 255, 255)
-    GAME_OVER_FONT_COLOR = (200, 40, 80)
-    FONT_SIZE = 70
-    GAME_OVER_FONT_SIZE = 80
+    LINE_FONT = (50, 50, 50)
+    LINE_WIDTH = 10
+    FONT_SIZE = 80
+    WINNER_SIZE = 130
     FONT_TYPE = 'Comic Sans MS'
-    GAME_OVER_FONT_TYPE = 'Comic Sans MS'
 
 
 class AudioConsts:
