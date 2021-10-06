@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 local_dir_audio = os.path.join(os.path.dirname(__file__), "audio")
 
 
@@ -29,6 +30,16 @@ class BallConsts:
 
 class PaddleConsts:
     PADDLE_SIZE = [10, 60]
+
+
+class EventConsts(Enum):
+    NO_ACTION = 0
+    LEFT_PADDLE_MOVE_UP = 1
+    LEFT_PADDLE_MOVE_DOWN = 2
+    RIGHT_PADDLE_MOVE_UP = 3
+    RIGHT_PADDLE_MOVE_DOWN = 4
+    QUIT = 5
+
 
 
 
