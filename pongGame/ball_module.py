@@ -31,8 +31,7 @@ class Ball(Position, Velocity):
         """
         Position.__init__(self, BallConsts.BALL_STARTING_POSITION_X,
                           BallConsts.BALL_STARTING_POSITION_Y)
-        Velocity.__init__(self, BallConsts.BALL_STARTING_VELOCITY_X,
-                          BallConsts.BALL_STARTING_VELOCITY_Y)
+        Velocity.__init__(self, x_vel=0, y_vel=0)
         self.__set_radius()
 
     def _set_position(self, x_pos: int, y_pos: int):
