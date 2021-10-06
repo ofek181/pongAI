@@ -30,7 +30,7 @@ class Paddle(Position, Velocity):
             Constructs all the necessary attributes for the Paddle object.
         """
         Position.__init__(self, x_pos=x_pos, y_pos=y_pos)
-        Velocity.__init__(self, x_vel=0, y_vel=0)
+        Velocity.__init__(self, x_vel=0, y_vel=15)
         self.__set_size()
 
     def _set_position(self, x_pos: int, y_pos: int):
@@ -53,15 +53,13 @@ class Paddle(Position, Velocity):
         """
         self.m_size = PaddleConsts.PADDLE_SIZE
 
-    def move(self):
+    def move(self, y_dist: int):
         """
             Implements the movement of the Paddle object.
         """
         if self.y_pos < 0 or self.y_pos + self.m_size[1] > DisplayConsts.SCREEN_HEIGHT:  # movement is out of bounds
-            self.x_pos = self.x_pos
-            self.y_pos = self.y_pos
+            self._set_position(self.x_pos, self.y_pos)
         else:
-            self.x_pos = self.x_pos + self.x_vel
-            self.y_pos = self.y_pos + self.y_vel
+            self._set_position(self.x_pos, self.y_pos + y_dist)
 
 
