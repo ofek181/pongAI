@@ -30,7 +30,7 @@ class Physics:
             ball_speed = math.sqrt(ball.x_vel**2 + ball.y_vel**2)
             new_x_vel = -ball_speed * math.cos(bounce_angle)
             new_y_vel = ball_speed * math.sin(bounce_angle)
-            vel = Velocity(new_x_vel, new_y_vel)
+            vel = Velocity(new_x_vel + 1, new_y_vel + 1)  # make ball accelerate each intersection
 
         if self.ball_screen_intersection(ball):
             new_y_vel = -ball.y_vel
