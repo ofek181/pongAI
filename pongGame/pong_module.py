@@ -1,12 +1,13 @@
 import pygame
+import math
+from random import randrange
 from .game_interface import Game
 from .ball_module import Ball
 from .paddle_module import Paddle
 from .event_handler_module import EventHandler
 from .physics_module import Physics
 from .display_module import Display
-from .consts_file import GameConsts, DisplayConsts, Action
-global run
+from .consts_file import BallConsts, GameConsts, DisplayConsts, Action
 
 
 class Pong(Game):
@@ -63,7 +64,6 @@ class Pong(Game):
         """
              Calculates a single frame of the game.
         """
-        global run
         # get actions for both players
         action_left = EventHandler.handle_left_events()
         action_right = EventHandler.handle_right_events()
@@ -77,41 +77,53 @@ class Pong(Game):
             self.m_paddle_right.move(-self.m_paddle_right.y_vel)
         if action_right == Action.MOVE_DOWN:
             self.m_paddle_right.move(self.m_paddle_right.y_vel)
+
         # quit the game if needed
-        if (action_right or action_left) == Action.QUIT:
+        if action_left == Action.QUIT or action_right == Action.QUIT:
             pygame.event.post(pygame.event.Event(pygame.QUIT))
-            run = False
+
+        # accelerate the ball if action occurred for the first time
+        if action_left != Action.NO_ACTION or action_right != Action.NO_ACTION:
+            if self.m_ball.x_vel == 0 and self.m_ball.y_vel == 0:
+                direction = randrange(start=-1, stop=1)
+                self.m_ball.x_vel = math.copysign(BallConsts.BALL_STARTING_VELOCITY_X, direction)
 
         # move the ball
         self.m_ball.move()
 
         # check for intersections
-        left_vel = Physics.calc_ball_velocity(self.m_ball, self.m_paddle_left)
-        right_vel = Physics.calc_ball_velocity(self.m_ball, self.m_paddle_right)
+        new_vel = Physics.calc_ball_velocity(self.m_ball, self.m_paddle_left, self.m_paddle_right)
 
         # if an intersection occurred
-        if [left_vel.x_vel, left_vel.y_vel] != [self.m_ball.x_vel, self.m_ball.y_vel]:
-            self.m_ball.x_vel, self.m_ball.y_vel = left_vel.x_vel, left_vel.y_vel
-        if [right_vel.x_vel, right_vel.y_vel] != [self.m_ball.x_vel, self.m_ball.y_vel]:
-            self.m_ball.x_vel, self.m_ball.y_vel = right_vel.x_vel, right_vel.y_vel
+        if [new_vel.x_vel, new_vel.y_vel] != [self.m_ball.x_vel, self.m_ball.y_vel]:
+            self.m_ball.x_vel, self.m_ball.y_vel = new_vel.x_vel, new_vel.y_vel
 
-        # TODO implement the scoring system
-        # TODO check why quit doesnt work
+        # if a player scored
+        if Physics.is_score(self.m_ball)[0]:
+            self.paddle_left_score += 1
+            self.m_ball = Ball()
+            self.m_paddle_left = Paddle(x_pos=50, y_pos=DisplayConsts.SCREEN_HEIGHT//2)
+            self.m_paddle_right = self.m_paddle_right = Paddle(x_pos=DisplayConsts.SCREEN_WIDTH-50,
+                                                               y_pos=DisplayConsts.SCREEN_HEIGHT//2)
+        if Physics.is_score(self.m_ball)[1]:
+            self.paddle_right_score += 1
+            self.m_ball = Ball()
+            self.m_paddle_left = Paddle(x_pos=50, y_pos=DisplayConsts.SCREEN_HEIGHT//2)
+            self.m_paddle_right = self.m_paddle_right = Paddle(x_pos=DisplayConsts.SCREEN_WIDTH-50,
+                                                               y_pos=DisplayConsts.SCREEN_HEIGHT//2)
+
         # TODO fix the physics class
-        # TODO add all consts to constfile
+        # TODO add all consts to const_file
+        # TODO implement the winner
 
     def run_game(self):
         """
              Main loop of the game.
         """
-        global run
-        run = True
-        while run:
-            self.display.animate_game(paddle_left=self.m_paddle_left,
-                                      paddle_right=self.m_paddle_right,
-                                      ball=self.m_ball)
-            self.display.show_score(score_left=self.paddle_left_score,
-                                    score_right=self.paddle_right_score)
+        while True:
+            self.display.draw_objects(paddle_left=self.m_paddle_left, paddle_right=self.m_paddle_right,
+                                      ball=self.m_ball,
+                                      score_left=self.paddle_left_score, score_right=self.paddle_right_score)
             if self.paddle_left_score == GameConsts.MAX_SCORE:
                 self.display.show_winner("Left Player Wins!")
             if self.paddle_right_score == GameConsts.MAX_SCORE:
