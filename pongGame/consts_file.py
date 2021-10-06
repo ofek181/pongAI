@@ -38,11 +38,9 @@ class GameConsts:
 
 class Action(Enum):
     NO_ACTION = 0
-    LEFT_PADDLE_MOVE_UP = 1
-    LEFT_PADDLE_MOVE_DOWN = 2
-    RIGHT_PADDLE_MOVE_UP = 3
-    RIGHT_PADDLE_MOVE_DOWN = 4
-    QUIT = 5
+    MOVE_UP = 1
+    MOVE_DOWN = 2
+    QUIT = 9
 
 
 
