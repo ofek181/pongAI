@@ -1,2 +1,6 @@
 .idea
 __pycache__
+architecture/*
+
+!.architecture/pong_architecture.vpp
+!.architecture/Pong.png
