@@ -1,5 +1,6 @@
 import pygame
 import math
+import pygame_menu
 from time import sleep
 from random import randrange
 from .game_interface import Game
@@ -34,7 +35,7 @@ class Pong(Game):
         ----------------------------
         __init__(self):
          Constructs all the necessary attributes for the Pong object.
-        _is_game_over(self) -> bool:
+        _is_game_over(self) -> [bool,bool]:
          checks whether the game is over based on MAX SCORE.
         _calc_frame(self):
          calculates a single frame of the game.
@@ -53,13 +54,15 @@ class Pong(Game):
         self.paddle_right_score = 0
         self.display = Display()
 
-    def _is_game_over(self) -> bool:
+    def _is_game_over(self) -> [bool, bool]:
         """
              Checks for game over state based on MAX_SCORE.
         """
-        if self.paddle_left_score == GameConsts.MAX_SCORE or self.paddle_right_score == GameConsts.MAX_SCORE:
-            return True
-        return False
+        if self.paddle_left_score == GameConsts.MAX_SCORE:
+            return True, False
+        if self.paddle_right_score == GameConsts.MAX_SCORE:
+            return False, True
+        return False, False
 
     def _calc_frame(self):
         """
@@ -113,21 +116,37 @@ class Pong(Game):
             self.m_paddle_right = self.m_paddle_right = Paddle(x_pos=DisplayConsts.SCREEN_WIDTH-50,
                                                                y_pos=DisplayConsts.SCREEN_HEIGHT//2)
 
-        # TODO implement the winner
-
     def run_game(self):
         """
              Main loop of the game.
         """
         while True:
+            # display sprites
             self.display.draw_objects(paddle_left=self.m_paddle_left, paddle_right=self.m_paddle_right,
-                                      ball=self.m_ball,
-                                      score_left=self.paddle_left_score, score_right=self.paddle_right_score)
-            if self.paddle_left_score == GameConsts.MAX_SCORE:
+                                      ball=self.m_ball,score_left=self.paddle_left_score,
+                                      score_right=self.paddle_right_score)
+
+            # check if game is over
+            if self._is_game_over()[0]:
                 self.display.show_winner("Left Player Wins!")
-                sleep(1/2)
-            if self.paddle_right_score == GameConsts.MAX_SCORE:
+                sleep(3)
+                self.start()
+            if self._is_game_over()[1]:
                 self.display.show_winner("Right Player Wins!")
-                sleep(1/2)
+                sleep(3)
+                self.start()
+
+            # calculate each frame
             self._calc_frame()
+
+    def start(self):
+        # create menu
+        menu = pygame_menu.Menu('Pong', DisplayConsts.SCREEN_WIDTH, DisplayConsts.SCREEN_HEIGHT,
+                                theme=pygame_menu.themes.THEME_DARK)
+
+        # menu.add.selector('Difficulty :', [('Easy', 1), ('Medium', 2), ('Hard', 3)])
+        menu.add.button('Singleplayer', self.run_game) # in the future will be neat
+        menu.add.button('Multiplayer', self.run_game)
+        menu.add.button('Exit', pygame_menu.events.EXIT)
+        menu.mainloop(self.display.screen)
 
