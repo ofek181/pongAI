@@ -1,5 +1,6 @@
 import pygame
 import math
+from time import sleep
 from random import randrange
 from .game_interface import Game
 from .ball_module import Ball
@@ -112,8 +113,6 @@ class Pong(Game):
             self.m_paddle_right = self.m_paddle_right = Paddle(x_pos=DisplayConsts.SCREEN_WIDTH-50,
                                                                y_pos=DisplayConsts.SCREEN_HEIGHT//2)
 
-        # TODO fix the physics class
-        # TODO add all consts to const_file
         # TODO implement the winner
 
     def run_game(self):
@@ -126,7 +125,9 @@ class Pong(Game):
                                       score_left=self.paddle_left_score, score_right=self.paddle_right_score)
             if self.paddle_left_score == GameConsts.MAX_SCORE:
                 self.display.show_winner("Left Player Wins!")
+                sleep(1/2)
             if self.paddle_right_score == GameConsts.MAX_SCORE:
                 self.display.show_winner("Right Player Wins!")
+                sleep(1/2)
             self._calc_frame()
 
