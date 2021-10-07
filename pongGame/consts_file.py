@@ -11,7 +11,7 @@ class DisplayConsts:
     LINE_FONT = (50, 50, 50)
     LINE_WIDTH = 10
     FONT_SIZE = 80
-    WINNER_SIZE = 130
+    WINNER_SIZE = 90
     FONT_TYPE = 'Comic Sans MS'
 
 
@@ -27,16 +27,17 @@ class BallConsts:
     BALL_STARTING_VELOCITY_X = 3
     BALL_STARTING_VELOCITY_Y = 0
     MIN_X_VEL = BALL_STARTING_VELOCITY_X
-    MAX_BOUNCE_ANGLE = 50
+    MAX_BOUNCE_ANGLE = 70
+    ACCELERATION = 0.2
 
 
 class PaddleConsts:
-    PADDLE_SIZE = [10, 60]
-    PADDLE_VELOCITY = 5
+    PADDLE_SIZE = [10, 70]
+    PADDLE_VELOCITY = 3
 
 
 class GameConsts:
-    MAX_SCORE = 10
+    MAX_SCORE = 1
 
 
 class Action(Enum):
