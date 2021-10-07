@@ -27,29 +27,29 @@ class Physics:
         """
             Calculates the velocity of the ball for the following frame.
         """
-        acceleration = 0.2
+
         vel = Velocity(ball.x_vel, ball.y_vel)
 
         # intersection with the left paddle
         if Physics.__ball_paddle_intersection(ball, paddle_left, paddle_right)[0]:
             angle = Physics.__ball_paddle_intersection(ball, paddle_left, paddle_right)[2] * 90
-            bounce = math.copysign(abs(min([angle, BallConsts.MAX_BOUNCE_ANGLE], key=abs)), angle)
-            ball_speed = math.sqrt(ball.x_vel**2 + ball.y_vel**2) + acceleration  # make the ball accelerate
-            x_vel = ball_speed * math.cos(math.degrees(bounce))
+            bounce = math.copysign(min([abs(angle), BallConsts.MAX_BOUNCE_ANGLE]), angle)
+            ball_speed = math.sqrt(ball.x_vel**2 + ball.y_vel**2) + BallConsts.ACCELERATION  # make the ball accelerate
+            x_vel = ball_speed * math.cos(math.radians(bounce))
             new_x_vel = max([x_vel, BallConsts.MIN_X_VEL], key=abs)
-            new_y_vel = ball_speed * math.sin(math.degrees(bounce))
-            vel = Velocity(new_x_vel, new_y_vel)  # make ball accelerate each intersection
+            new_y_vel = -ball_speed * math.sin(math.radians(bounce))
+            vel = Velocity(new_x_vel, new_y_vel)
             Audio.sound_hit()
 
         # intersection with the right paddle
         if Physics.__ball_paddle_intersection(ball, paddle_left, paddle_right)[1]:
             angle = Physics.__ball_paddle_intersection(ball, paddle_left, paddle_right)[2] * 90
-            bounce = math.copysign(abs(min([angle, BallConsts.MAX_BOUNCE_ANGLE], key=abs)), angle)
-            ball_speed = math.sqrt(ball.x_vel ** 2 + ball.y_vel ** 2) + acceleration
-            x_vel = -ball_speed * math.cos(math.degrees(bounce))
+            bounce = math.copysign(min([abs(angle), BallConsts.MAX_BOUNCE_ANGLE]), angle)
+            ball_speed = math.sqrt(ball.x_vel ** 2 + ball.y_vel ** 2) +  BallConsts.ACCELERATION
+            x_vel = -ball_speed * math.cos(math.radians(bounce))
             new_x_vel = max([x_vel, -BallConsts.MIN_X_VEL], key=abs)
-            new_y_vel = ball_speed * math.sin(math.degrees(bounce))
-            vel = Velocity(new_x_vel, new_y_vel)  # make ball accelerate each intersection
+            new_y_vel = -ball_speed * math.sin(math.radians(bounce))
+            vel = Velocity(new_x_vel, new_y_vel)
             Audio.sound_hit()
 
         # intersection with the screen
@@ -81,24 +81,18 @@ class Physics:
         # right paddle intersection
         if paddle_right.x_pos+paddle_right.m_size[0]+buffer >= ball.x_pos+ball.m_radius >= paddle_right.x_pos-buffer:
             if ball.x_vel > 0:
-                if paddle_right.y_pos <= ball.y_pos <= paddle_right.y_pos + paddle_right.m_size[1]:
+                if paddle_right.y_pos-buffer <= ball.y_pos <= paddle_right.y_pos+paddle_right.m_size[1]+buffer:
                     collision_right = True
-                    normalized_dist = (paddle_right.y_pos + paddle_right.m_size[1] / 2
+                    normalized_dist = (paddle_right.y_pos + paddle_right.m_size[1]/2
                                        - ball.y_pos) / paddle_right.m_size[1]
 
         # left paddle intersection
         if paddle_left.x_pos-buffer <= ball.x_pos - ball.m_radius <= paddle_left.x_pos+paddle_left.m_size[0]+buffer:
             if ball.x_vel < 0:
-                if paddle_left.y_pos <= ball.y_pos <= paddle_left.y_pos + paddle_left.m_size[1]:
+                if paddle_left.y_pos-buffer <= ball.y_pos <= paddle_left.y_pos + paddle_left.m_size[1]+buffer:
                     collision_left = True
                     normalized_dist = (paddle_left.y_pos + paddle_left.m_size[1] / 2
                                        - ball.y_pos) / paddle_left.m_size[1]
-
-        if abs(normalized_dist) > 1/2:
-            raise Exception("Distance during intersection Error")
-
-        if collision_right or collision_left:
-            print(normalized_dist)
 
         return collision_left, collision_right, normalized_dist
 
