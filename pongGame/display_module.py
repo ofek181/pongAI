@@ -1,4 +1,5 @@
 import pygame
+import pygame_menu
 from .consts_file import DisplayConsts
 
 
@@ -33,11 +34,16 @@ class Display:
         """
             Displays the winner over the screen.
         """
+        # clear screen
+        self._screen.fill((0, 0, 0))
+
+        # draw winner
         font = pygame.font.SysFont(DisplayConsts.FONT_TYPE, DisplayConsts.WINNER_SIZE)
         surface = font.render(player, True, DisplayConsts.FONT_COLOR)  # Display game over
         rect = surface.get_rect()
         rect.midtop = (DisplayConsts.SCREEN_WIDTH // 2, DisplayConsts.SCREEN_HEIGHT // 3)
         self._screen.blit(surface, rect)
+
         pygame.display.update()  # update the screen
 
     def __draw_screen(self, score_left: int, score_right: int):
@@ -92,4 +98,12 @@ class Display:
 
         pygame.time.Clock().tick(DisplayConsts.FPS)  # respect fps for screen updates
         pygame.display.update()  # update the screen
+
+    def draw_menu(self, paddle_left, paddle_right, ball, score_left: int, score_right: int):
+        menu = pygame_menu.Menu('Welcome', 400, 300,
+                                theme=pygame_menu.themes.THEME_BLUE)
+
+        # menu.add.selector('Difficulty :', [('Hard', 1), ('Easy', 2)], onchange=set_difficulty)
+        menu.add.button('Play', self.draw_objects(paddle_left, paddle_right, ball, score_left, score_right))
+        menu.add.button('Quit', pygame_menu.events.EXIT)
 
