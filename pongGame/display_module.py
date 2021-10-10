@@ -52,13 +52,13 @@ class Display:
         """
         # draw the scoring system
         font_left = pygame.font.SysFont(DisplayConsts.FONT_TYPE, DisplayConsts.FONT_SIZE)
-        surface_left = font_left.render(str(score_left), True, DisplayConsts.FONT_COLOR)  # show score
+        surface_left = font_left.render(str(score_left), True, DisplayConsts.LINE_FONT)  # show score
         rect_left = surface_left.get_rect()
         rect_left.midtop = (DisplayConsts.SCREEN_WIDTH // 2.4, DisplayConsts.SCREEN_HEIGHT // 20)
         self.screen.blit(surface_left, rect_left)
 
         font_right = pygame.font.SysFont(DisplayConsts.FONT_TYPE, DisplayConsts.FONT_SIZE)
-        surface_right = font_right.render(str(score_right), True, DisplayConsts.FONT_COLOR)  # show score
+        surface_right = font_right.render(str(score_right), True, DisplayConsts.LINE_FONT)  # show score
         rect_right = surface_right.get_rect()
         rect_right.midtop = (DisplayConsts.SCREEN_WIDTH // 1.7, DisplayConsts.SCREEN_HEIGHT // 20)
         self.screen.blit(surface_right, rect_right)
