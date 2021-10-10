@@ -123,12 +123,6 @@ class NeatAI:
         with open(genome_path, "rb") as f:
             genome = pickle.load(f)
 
-        # audio parameters
-        pygame.mixer.init()
-        hit_sound = pygame.mixer.Sound(AudioConsts.HIT_AUDIO)
-        score_sound = pygame.mixer.Sound(AudioConsts.SCORE_AUDIO)
-        channel1 = pygame.mixer.Channel(0)
-
         # initialization
         ball = Ball()
         ai_paddle = Paddle(x_pos=50, y_pos=DisplayConsts.SCREEN_HEIGHT // 2)
@@ -167,10 +161,6 @@ class NeatAI:
             if output[0] <= -0.5:
                 ai_paddle.move(ai_paddle.y_vel)
 
-            # do nothing
-            if -0.5 < output[0] < 0.5:
-                pass
-
             # accelerate the ball if action occurred for the first time
             if human_action != Action.NO_ACTION:
                 if ball.x_vel == 0 and ball.y_vel == 0:
@@ -200,12 +190,12 @@ class NeatAI:
                                       y_pos=DisplayConsts.SCREEN_HEIGHT // 2)
 
             # check if game is over
-            if human_paddle == GameConsts.MAX_SCORE:
+            if human_score == GameConsts.MAX_SCORE:
                 display.show_winner("Human wins!")
                 sleep(3)
                 break
 
-            if ai_paddle == GameConsts.MAX_SCORE:
+            if ai_score == GameConsts.MAX_SCORE:
                 display.show_winner("AI wins!")
                 sleep(3)
                 break
