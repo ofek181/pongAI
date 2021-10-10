@@ -1,6 +1,5 @@
 import pygame
 import math
-import pygame_menu
 from time import sleep
 from random import randrange
 from .game_interface import Game
@@ -97,10 +96,7 @@ class Pong(Game):
 
         # check for intersections
         new_vel = Physics.calc_ball_velocity(self.m_ball, self.m_paddle_left, self.m_paddle_right)
-
-        # if an intersection occurred
-        if [new_vel.x_vel, new_vel.y_vel] != [self.m_ball.x_vel, self.m_ball.y_vel]:
-            self.m_ball.x_vel, self.m_ball.y_vel = new_vel.x_vel, new_vel.y_vel
+        self.m_ball.x_vel, self.m_ball.y_vel = new_vel.x_vel, new_vel.y_vel
 
         # if a player scored
         if Physics.is_score(self.m_ball)[0]:
@@ -130,23 +126,13 @@ class Pong(Game):
             if self._is_game_over()[0]:
                 self.display.show_winner("Left Player Wins!")
                 sleep(3)
-                self.start()
+                break
             if self._is_game_over()[1]:
                 self.display.show_winner("Right Player Wins!")
                 sleep(3)
-                self.start()
+                break
 
             # calculate each frame
             self._calc_frame()
 
-    def start(self):
-        # create menu
-        menu = pygame_menu.Menu('Pong', DisplayConsts.SCREEN_WIDTH, DisplayConsts.SCREEN_HEIGHT,
-                                theme=pygame_menu.themes.THEME_DARK)
-
-        # menu.add.selector('Difficulty :', [('Easy', 1), ('Medium', 2), ('Hard', 3)])
-        menu.add.button('Singleplayer', self.run_game) # in the future will be neat
-        menu.add.button('Multiplayer', self.run_game)
-        menu.add.button('Exit', pygame_menu.events.EXIT)
-        menu.mainloop(self.display.screen)
 

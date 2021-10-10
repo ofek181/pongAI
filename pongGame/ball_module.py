@@ -25,13 +25,13 @@ class Ball(Position, Velocity):
         move(self):
          Calculates the next position of the ball based on its velocity.
     """
-    def __init__(self):
+    def __init__(self, x_vel: int = 0, y_vel: int = 0):
         """
             Constructs all the necessary attributes for the Ball object.
         """
         Position.__init__(self, BallConsts.BALL_STARTING_POSITION_X,
                           BallConsts.BALL_STARTING_POSITION_Y)
-        Velocity.__init__(self, x_vel=0, y_vel=0)
+        Velocity.__init__(self, x_vel=x_vel, y_vel=y_vel)
         self.__set_radius()
 
     def _set_position(self, x_pos: int, y_pos: int):
