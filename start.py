@@ -1,5 +1,6 @@
 import pygame_menu
 from pongGame.pong_module import Pong
+from pongAI.run_neat import start_neat
 from pongGame.consts_file import DisplayConsts
 
 
@@ -14,4 +15,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    start_neat()
