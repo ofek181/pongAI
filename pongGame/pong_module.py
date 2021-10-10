@@ -1,6 +1,5 @@
 import pygame
 import math
-import pygame_menu
 from time import sleep
 from random import randrange
 from .game_interface import Game
@@ -97,10 +96,7 @@ class Pong(Game):
 
         # check for intersections
         new_vel = Physics.calc_ball_velocity(self.m_ball, self.m_paddle_left, self.m_paddle_right)
-
-        # if an intersection occurred
-        if [new_vel.x_vel, new_vel.y_vel] != [self.m_ball.x_vel, self.m_ball.y_vel]:
-            self.m_ball.x_vel, self.m_ball.y_vel = new_vel.x_vel, new_vel.y_vel
+        self.m_ball.x_vel, self.m_ball.y_vel = new_vel.x_vel, new_vel.y_vel
 
         # if a player scored
         if Physics.is_score(self.m_ball)[0]:
