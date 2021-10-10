@@ -1,11 +1,17 @@
+import random
 import pygame
 import neat
 import sys
 import pickle
+from random import randrange
+from .algorithm_display import AlgoDisplay
+from pongGame.pong_module import Pong
+from pongGame.ball_module import Ball
+from pongGame.paddle_module import Paddle
+from pongGame.event_handler_module import EventHandler
+from pongGame.physics_module import Physics
+from pongGame.consts_file import BallConsts, GameConsts, DisplayConsts, Action, AudioConsts
 
-import flappyGame
-from flappyGame import Bird, PipePair, Floor, Logic, Game, consts
-from .game_animation import NeatDisplay
 global generation
 
 
@@ -37,27 +43,26 @@ class NeatAI:
         global generation
         generation += 1
         score = 0
+        pong = Pong()
         neural_networks = []
-        birds = []
+        balls = []
+        paddles = []
+        static_paddle = Paddle(x_pos=DisplayConsts.SCREEN_WIDTH - 50,
+                               y_pos=DisplayConsts.SCREEN_HEIGHT // 2,
+                               size= DisplayConsts.SCREEN_HEIGHT)
         genes = []
-        floor = Floor()
-        pipes = [PipePair(x_pos=500 + i * consts.PipeConsts.HORIZONTAL_GAP)
-                 for i in range(10)]  # create 10 pipes
-        closest_pipe = pipes[0]
-        next_pipe = pipes[1]
-        display = NeatDisplay()
+        display = AlgoDisplay()
         for genome_id, genome in genomes:
             genome.fitness = 0
             network = neat.nn.FeedForwardNetwork.create(genome, config)
             neural_networks.append(network)
-            birds.append(Bird())
+            balls.append(Ball(x_vel=random.randint(0, 4), y_vel=randrange(-2, 2)))
             genes.append(genome)
 
         # game loop for each generation
-        while len(birds) > 0:
+        while len(balls) > 0:
             # game display and event handling
-            display.animate_game(birds=birds, pipes=pipes, floor=floor)
-            display.show_score_and_birds_alive(score=score, birds=birds)
+            display.draw_training(static_paddle=static_paddle, paddles=paddles, balls=balls)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -66,50 +71,39 @@ class NeatAI:
                     if event.key == pygame.K_ESCAPE:
                         pygame.event.post(pygame.event.Event(pygame.QUIT))
 
-            # remove pipe if it moves out of screen and append another pipe to the list
-            if pipes[0].x + consts.PipeConsts.TOP_IMAGE.get_width() < 0:
-                pipes.pop(0)  # remove the passed pipe
-                pipes.append(PipePair(pipes[-1].x + consts.PipeConsts.HORIZONTAL_GAP,
-                                      velocity=pipes[-1].velocity))  # append another pipe
+            # move the balls and check collisions
+            for index, ball in balls:
+                ball.move()
+                new_vel = Physics.calc_ball_velocity(ball, paddles[index], static_paddle)
+                ball.x_vel, ball.y_vel = new_vel.x_vel, new_vel.y_vel
 
-            # check score of bird[0] which is the last to be alive
-            if Logic.check_score(bird=birds[0], closest_pipe=closest_pipe):
-                score += 1
-                closest_pipe = pipes[1]
-                next_pipe = pipes[2]
+            # remove paddle and ball if the ball is out of screen
+            for index, ball in enumerate(balls):
+                if ball.x_pos <= 0:
+                    genes[index].fitness -= 5
+                    neural_networks.pop(index)
+                    genes.pop(index)
+                    balls.pop(index)
+                    paddles.pop(index)
 
-            # run over all birds and move them as well as calculate distances to closest pipe.
-            for i, bird in enumerate(birds):
-                genes[i].fitness += 0.1
-                bird.move()
-                delta_y_closest = abs(bird.y - closest_pipe.bot_pipe_head)
-                delta_x_closest = abs(bird.x - closest_pipe.x)
-                delta_y_next = abs(bird.y- next_pipe.bot_pipe_head)
-                delta_x_next = abs(bird.x - next_pipe.x)
+            # reinforce the winning paddles for each living frame
+            for index, paddle in enumerate(paddles):
+                genes[index].fitness += 0.1
+                output = neural_networks[index].activate(balls[index].x_vel, balls[index].y_vel,
+                                                         balls[index].x_pos, balls[index].y_pos,
+                                                         paddle.x_pos, paddle.y_pos)
 
-                # run the neural network with following inputs:
-                # velocity of bird, velocity of closest pipe, x axis distance and y axis distance for next 2 pipes
-                output = neural_networks[birds.index(bird)].activate((bird.velocity, closest_pipe.velocity,
-                                                                      delta_x_closest, delta_y_closest,
-                                                                      delta_x_next, delta_y_next))
-                # jump if output neuron returns value over 0.5
-                if output[0] > 0.5:
-                    bird.jump()
+                # move paddle up
+                if output[0] >= 0.5:
+                    paddle.move(-paddle.y_vel)
 
-            # move all pipes
-            for pipe in pipes:
-                pipe.move()
+                # move paddle down
+                if output[0] <= -0.5:
+                    paddle.move(paddle.y_vel)
 
-            # move the floor
-            floor.move()
-
-            # pop bird if it collides
-            for i, bird in enumerate(birds):
-                if Logic.check_collision(floor, closest_pipe, bird):
-                    genes[i].fitness -= 2
-                    neural_networks.pop(i)
-                    genes.pop(i)
-                    birds.pop(i)
+                # do nothing
+                if -0.5 < output[0] < 0.5:
+                    continue
 
     @staticmethod
     def test(config_path, genome_path="flappyNEAT/winner.pkl"):
@@ -131,88 +125,82 @@ class NeatAI:
 
         # audio parameters
         pygame.mixer.init()
-        background_sound = pygame.mixer.Sound(consts.AudioConsts.BACKGROUND_AUDIO)
-        game_over_sound = pygame.mixer.Sound(consts.AudioConsts.GAME_OVER_AUDIO)
-        score_sound = pygame.mixer.Sound(consts.AudioConsts.SCORE_AUDIO)
-        pygame.mixer.Sound.set_volume(background_sound, 0.5)
+        hit_sound = pygame.mixer.Sound(AudioConsts.HIT_AUDIO)
+        score_sound = pygame.mixer.Sound(AudioConsts.SCORE_AUDIO)
         channel1 = pygame.mixer.Channel(0)
-        channel2 = pygame.mixer.Channel(1)
 
-        # initialization
-        bird = Bird()
-        floor = Floor()
-        pipes = [PipePair(x_pos=500 + i * consts.PipeConsts.HORIZONTAL_GAP)
-                 for i in range(10)]  # create 10 pipes
-        closest_pipe = pipes[0]
-        next_pipe = pipes[1]
-        display = flappyGame.Display()
-        game_over_manager = Game()
-        neural_network = neat.nn.FeedForwardNetwork.create(genome, config)
-
-        channel1.play(background_sound, loops=-1)
-        while True:
-            # game display and event handling
-            display.animate_game(bird=bird,pipe_pairs=pipes,floor=floor)
-            display.show_score(bird=bird)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        pygame.event.post(pygame.event.Event(pygame.QUIT))
-
-            # remove pipe if it moves out of screen and append another pipe to the list
-            if pipes[0].x + consts.PipeConsts.TOP_IMAGE.get_width() < 0:
-                pipes.pop(0)  # remove the passed pipe
-                pipes.append(PipePair(pipes[-1].x + consts.PipeConsts.HORIZONTAL_GAP,
-                                      velocity=pipes[-1].velocity))  # append another pipe
-
-            # check score of bird
-            if Logic.check_score(bird=bird, closest_pipe=closest_pipe):
-                channel2.play(score_sound)
-                bird.score += 1
-                closest_pipe = pipes[1]
-                next_pipe = pipes[2]
-
-            bird.move()
-            delta_y_closest = abs(bird.y - closest_pipe.bot_pipe_head)
-            delta_x_closest = abs(bird.x - closest_pipe.x)
-            delta_y_next = abs(bird.y - next_pipe.bot_pipe_head)
-            delta_x_next = abs(bird.x - next_pipe.x)
-
-            output = neural_network.activate((bird.velocity, closest_pipe.velocity,
-                                              delta_x_closest, delta_y_closest,
-                                              delta_x_next, delta_y_next))
-
-            # jump if output neuron returns value over 0.5
-            if output[0] > 0.5:
-                bird.jump()
-
-            # move all pipes
-            for pipe in pipes:
-                pipe.move()
-
-            # move the floor
-            floor.move()
-
-            if Logic.check_collision(floor, closest_pipe, bird):
-                channel1.play(game_over_sound)
-                while True:
-                    display.show_game_over()
-                    display.animate_game(bird, pipes, floor)
-                    # animate bird falling
-                    if bird.y + bird.bird_image.get_height() <= floor.y:
-                        bird.move()
-
-                    # exit the game
-                    for event in pygame.event.get():
-                        if event.type == pygame.QUIT:
-                            pygame.quit()
-                            sys.exit()
-                        elif event.type == pygame.KEYDOWN:
-                            if event.key == pygame.K_ESCAPE:
-                                pygame.event.post(pygame.event.Event(pygame.QUIT))
+        # # initialization
+        # ball = Ball()
+        # paddle_left =
+        # bird = Bird()
+        # floor = Floor()
+        # display = flappyGame.Display()
+        # game_over_manager = Game()
+        # neural_network = neat.nn.FeedForwardNetwork.create(genome, config)
+        #
+        # while True:
+        #     # game display and event handling
+        #     display.animate_game(bird=bird,pipe_pairs=pipes,floor=floor)
+        #     display.show_score(bird=bird)
+        #     for event in pygame.event.get():
+        #         if event.type == pygame.QUIT:
+        #             pygame.quit()
+        #             sys.exit()
+        #         elif event.type == pygame.KEYDOWN:
+        #             if event.key == pygame.K_ESCAPE:
+        #                 pygame.event.post(pygame.event.Event(pygame.QUIT))
+        #
+        #     # remove pipe if it moves out of screen and append another pipe to the list
+        #     if pipes[0].x + consts.PipeConsts.TOP_IMAGE.get_width() < 0:
+        #         pipes.pop(0)  # remove the passed pipe
+        #         pipes.append(PipePair(pipes[-1].x + consts.PipeConsts.HORIZONTAL_GAP,
+        #                               velocity=pipes[-1].velocity))  # append another pipe
+        #
+        #     # check score of bird
+        #     if Logic.check_score(bird=bird, closest_pipe=closest_pipe):
+        #         channel2.play(score_sound)
+        #         bird.score += 1
+        #         closest_pipe = pipes[1]
+        #         next_pipe = pipes[2]
+        #
+        #     bird.move()
+        #     delta_y_closest = abs(bird.y - closest_pipe.bot_pipe_head)
+        #     delta_x_closest = abs(bird.x - closest_pipe.x)
+        #     delta_y_next = abs(bird.y - next_pipe.bot_pipe_head)
+        #     delta_x_next = abs(bird.x - next_pipe.x)
+        #
+        #     output = neural_network.activate((bird.velocity, closest_pipe.velocity,
+        #                                       delta_x_closest, delta_y_closest,
+        #                                       delta_x_next, delta_y_next))
+        #
+        #     # jump if output neuron returns value over 0.5
+        #     if output[0] > 0.5:
+        #         bird.jump()
+        #
+        #     # move all pipes
+        #     for pipe in pipes:
+        #         pipe.move()
+        #
+        #     # move the floor
+        #     floor.move()
+        #
+        #     if Logic.check_collision(floor, closest_pipe, bird):
+        #         channel1.play(game_over_sound)
+        #         while True:
+        #             display.show_game_over()
+        #             display.animate_game(bird, pipes, floor)
+        #             # animate bird falling
+        #             if bird.y + bird.bird_image.get_height() <= floor.y:
+        #                 bird.move()
+        #
+        #             # exit the game
+        #             for event in pygame.event.get():
+        #                 if event.type == pygame.QUIT:
+        #                     pygame.quit()
+        #                     sys.exit()
+        #                 elif event.type == pygame.KEYDOWN:
+        #                     if event.key == pygame.K_ESCAPE:
+        #                         pygame.event.post(pygame.event.Event(pygame.QUIT))
 
     @staticmethod
     def train(config_file):
@@ -241,7 +229,7 @@ class NeatAI:
         # Run for up to 100 generations.
         winner = p.run(NeatAI.eval_genomes, 100)
 
-        with open("flappyNEAT/winner.pkl", "wb") as f:
+        with open("pongAI/winner.pkl", "wb") as f:
             pickle.dump(winner, f)
             f.close()
 
