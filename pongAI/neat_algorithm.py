@@ -42,21 +42,19 @@ class NeatAI:
         # initialize parameters
         global generation
         generation += 1
-        score = 0
-        pong = Pong()
         neural_networks = []
         balls = []
         paddles = []
-        static_paddle = Paddle(x_pos=DisplayConsts.SCREEN_WIDTH - 50,
-                               y_pos=DisplayConsts.SCREEN_HEIGHT // 2,
-                               size= DisplayConsts.SCREEN_HEIGHT)
+        static_paddle = Paddle(x_pos=DisplayConsts.SCREEN_WIDTH - 50, y_pos=0,
+                               size=[10, DisplayConsts.SCREEN_HEIGHT])
         genes = []
         display = AlgoDisplay()
         for genome_id, genome in genomes:
             genome.fitness = 0
             network = neat.nn.FeedForwardNetwork.create(genome, config)
             neural_networks.append(network)
-            balls.append(Ball(x_vel=random.randint(0, 4), y_vel=randrange(-2, 2)))
+            balls.append(Ball(x_vel=random.randint(1, 4), y_vel=randrange(-2, 2)))
+            paddles.append(Paddle(x_pos=50, y_pos=DisplayConsts.SCREEN_HEIGHT//2))
             genes.append(genome)
 
         # game loop for each generation
@@ -72,7 +70,7 @@ class NeatAI:
                         pygame.event.post(pygame.event.Event(pygame.QUIT))
 
             # move the balls and check collisions
-            for index, ball in balls:
+            for index, ball in enumerate(balls):
                 ball.move()
                 new_vel = Physics.calc_ball_velocity(ball, paddles[index], static_paddle)
                 ball.x_vel, ball.y_vel = new_vel.x_vel, new_vel.y_vel
@@ -89,9 +87,9 @@ class NeatAI:
             # reinforce the winning paddles for each living frame
             for index, paddle in enumerate(paddles):
                 genes[index].fitness += 0.1
-                output = neural_networks[index].activate(balls[index].x_vel, balls[index].y_vel,
+                output = neural_networks[index].activate((balls[index].x_vel, balls[index].y_vel,
                                                          balls[index].x_pos, balls[index].y_pos,
-                                                         paddle.x_pos, paddle.y_pos)
+                                                         paddle.x_pos, paddle.y_pos))
 
                 # move paddle up
                 if output[0] >= 0.5:
