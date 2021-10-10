@@ -12,7 +12,7 @@ class DisplayConsts:
     LINE_WIDTH = 10
     FONT_SIZE = 80
     WINNER_SIZE = 90
-    FONT_TYPE = 'Comic Sans MS'
+    FONT_TYPE = '8-Bit-Madness'
 
 
 class AudioConsts:
