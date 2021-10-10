@@ -130,23 +130,13 @@ class Pong(Game):
             if self._is_game_over()[0]:
                 self.display.show_winner("Left Player Wins!")
                 sleep(3)
-                self.start()
+                break
             if self._is_game_over()[1]:
                 self.display.show_winner("Right Player Wins!")
                 sleep(3)
-                self.start()
+                break
 
             # calculate each frame
             self._calc_frame()
 
-    def start(self):
-        # create menu
-        menu = pygame_menu.Menu('Pong', DisplayConsts.SCREEN_WIDTH, DisplayConsts.SCREEN_HEIGHT,
-                                theme=pygame_menu.themes.THEME_DARK)
-
-        # menu.add.selector('Difficulty :', [('Easy', 1), ('Medium', 2), ('Hard', 3)])
-        menu.add.button('Singleplayer', self.run_game) # in the future will be neat
-        menu.add.button('Multiplayer', self.run_game)
-        menu.add.button('Exit', pygame_menu.events.EXIT)
-        menu.mainloop(self.display.screen)
 
