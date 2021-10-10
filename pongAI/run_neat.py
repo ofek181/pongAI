@@ -2,25 +2,30 @@ import os
 from .neat_algorithm import NeatAI
 
 
-def train():
+class AI:
     """
-        Determine path to configuration file. This path manipulation is
-        here so that the script will run successfully regardless of the
-        current working directory.
+        static class for implementing the train and test functions.
     """
-    local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, 'config-feedforward.txt')
-    NeatAI.train(config_path)  # train
+    @staticmethod
+    def train():
+        """
+            Determine path to configuration file. This path manipulation is
+            here so that the script will run successfully regardless of the
+            current working directory.
+        """
+        local_dir = os.path.dirname(__file__)
+        config_path = os.path.join(local_dir, 'config-feedforward.txt')
+        NeatAI.train(config_path)  # train
 
-
-def test():
-    """
-        Determine path to configuration file. This path manipulation is
-        here so that the script will run successfully regardless of the
-        current working directory.
-    """
-    local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, 'config-feedforward.txt')
-    NeatAI.test(config_path)  # test
+    @staticmethod
+    def test():
+        """
+            Determine path to configuration file. This path manipulation is
+            here so that the script will run successfully regardless of the
+            current working directory.
+        """
+        local_dir = os.path.dirname(__file__)
+        config_path = os.path.join(local_dir, 'config-feedforward.txt')
+        NeatAI.test(config_path)  # test
 
 
