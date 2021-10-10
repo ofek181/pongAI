@@ -3,9 +3,11 @@ import pygame
 import neat
 import sys
 import pickle
+import math
+from time import sleep
 from random import randrange
 from .algorithm_display import AlgoDisplay
-from pongGame.pong_module import Pong
+from pongGame.display_module import Display
 from pongGame.ball_module import Ball
 from pongGame.paddle_module import Paddle
 from pongGame.event_handler_module import EventHandler
@@ -104,7 +106,7 @@ class NeatAI:
                     continue
 
     @staticmethod
-    def test(config_path, genome_path="flappyNEAT/winner.pkl"):
+    def test(config_path, genome_path="pongAI/winner.pkl"):
         """
             Loads the winner network and runs the flappy bird game
             :param
@@ -127,78 +129,86 @@ class NeatAI:
         score_sound = pygame.mixer.Sound(AudioConsts.SCORE_AUDIO)
         channel1 = pygame.mixer.Channel(0)
 
-        # # initialization
-        # ball = Ball()
-        # paddle_left =
-        # bird = Bird()
-        # floor = Floor()
-        # display = flappyGame.Display()
-        # game_over_manager = Game()
-        # neural_network = neat.nn.FeedForwardNetwork.create(genome, config)
-        #
-        # while True:
-        #     # game display and event handling
-        #     display.animate_game(bird=bird,pipe_pairs=pipes,floor=floor)
-        #     display.show_score(bird=bird)
-        #     for event in pygame.event.get():
-        #         if event.type == pygame.QUIT:
-        #             pygame.quit()
-        #             sys.exit()
-        #         elif event.type == pygame.KEYDOWN:
-        #             if event.key == pygame.K_ESCAPE:
-        #                 pygame.event.post(pygame.event.Event(pygame.QUIT))
-        #
-        #     # remove pipe if it moves out of screen and append another pipe to the list
-        #     if pipes[0].x + consts.PipeConsts.TOP_IMAGE.get_width() < 0:
-        #         pipes.pop(0)  # remove the passed pipe
-        #         pipes.append(PipePair(pipes[-1].x + consts.PipeConsts.HORIZONTAL_GAP,
-        #                               velocity=pipes[-1].velocity))  # append another pipe
-        #
-        #     # check score of bird
-        #     if Logic.check_score(bird=bird, closest_pipe=closest_pipe):
-        #         channel2.play(score_sound)
-        #         bird.score += 1
-        #         closest_pipe = pipes[1]
-        #         next_pipe = pipes[2]
-        #
-        #     bird.move()
-        #     delta_y_closest = abs(bird.y - closest_pipe.bot_pipe_head)
-        #     delta_x_closest = abs(bird.x - closest_pipe.x)
-        #     delta_y_next = abs(bird.y - next_pipe.bot_pipe_head)
-        #     delta_x_next = abs(bird.x - next_pipe.x)
-        #
-        #     output = neural_network.activate((bird.velocity, closest_pipe.velocity,
-        #                                       delta_x_closest, delta_y_closest,
-        #                                       delta_x_next, delta_y_next))
-        #
-        #     # jump if output neuron returns value over 0.5
-        #     if output[0] > 0.5:
-        #         bird.jump()
-        #
-        #     # move all pipes
-        #     for pipe in pipes:
-        #         pipe.move()
-        #
-        #     # move the floor
-        #     floor.move()
-        #
-        #     if Logic.check_collision(floor, closest_pipe, bird):
-        #         channel1.play(game_over_sound)
-        #         while True:
-        #             display.show_game_over()
-        #             display.animate_game(bird, pipes, floor)
-        #             # animate bird falling
-        #             if bird.y + bird.bird_image.get_height() <= floor.y:
-        #                 bird.move()
-        #
-        #             # exit the game
-        #             for event in pygame.event.get():
-        #                 if event.type == pygame.QUIT:
-        #                     pygame.quit()
-        #                     sys.exit()
-        #                 elif event.type == pygame.KEYDOWN:
-        #                     if event.key == pygame.K_ESCAPE:
-        #                         pygame.event.post(pygame.event.Event(pygame.QUIT))
+        # initialization
+        ball = Ball()
+        ai_paddle = Paddle(x_pos=50, y_pos=DisplayConsts.SCREEN_HEIGHT // 2)
+        human_paddle =  Paddle(x_pos=DisplayConsts.SCREEN_WIDTH - 50,
+                               y_pos=DisplayConsts.SCREEN_HEIGHT // 2)
+        ai_score = 0
+        human_score = 0
+        display = Display()
+        neural_network = neat.nn.FeedForwardNetwork.create(genome, config)
+
+        while True:
+            # game display and event handling
+            display.draw_objects(paddle_left=ai_paddle, paddle_right=human_paddle,
+                                 ball=ball,score_left=ai_score, score_right=human_score)
+
+            # move human paddle
+            human_action = EventHandler.handle_right_events()
+            if human_action == Action.MOVE_UP:
+                human_paddle.move(-human_paddle.y_vel)
+            if human_action == Action.MOVE_DOWN:
+                human_paddle.move(human_paddle.y_vel)
+
+            # quit the game if needed
+            if human_action == Action.QUIT:
+                pygame.event.post(pygame.event.Event(pygame.QUIT))
+
+            # move ai paddle
+            output = neural_network.activate((ball.x_vel, ball.y_vel,
+                                              ball.x_pos, ball.y_pos,
+                                              ai_paddle.x_pos, ai_paddle.y_pos))
+            # ai move paddle up
+            if output[0] >= 0.5:
+                ai_paddle.move(-ai_paddle.y_vel)
+
+            # move paddle down
+            if output[0] <= -0.5:
+                ai_paddle.move(ai_paddle.y_vel)
+
+            # do nothing
+            if -0.5 < output[0] < 0.5:
+                pass
+
+            # accelerate the ball if action occurred for the first time
+            if human_action != Action.NO_ACTION:
+                if ball.x_vel == 0 and ball.y_vel == 0:
+                    direction = randrange(start=-1, stop=1)
+                    ball.x_vel = math.copysign(BallConsts.BALL_STARTING_VELOCITY_X, direction)
+
+            # move the ball
+            ball.move()
+
+            # check for intersections
+            new_vel = Physics.calc_ball_velocity(ball=ball, paddle_left=ai_paddle, paddle_right=human_paddle)
+            ball.x_vel, ball.y_vel = new_vel.x_vel, new_vel.y_vel
+
+            # if ai scored
+            if Physics.is_score(ball)[0]:
+                ai_score += 1
+                ball = Ball()
+                ai_paddle = Paddle(x_pos=50, y_pos=DisplayConsts.SCREEN_HEIGHT // 2)
+                human_paddle = Paddle(x_pos=DisplayConsts.SCREEN_WIDTH - 50,
+                                      y_pos=DisplayConsts.SCREEN_HEIGHT // 2)
+            # if human scored
+            if Physics.is_score(ball)[1]:
+                human_score += 1
+                ball = Ball()
+                ai_paddle = Paddle(x_pos=50, y_pos=DisplayConsts.SCREEN_HEIGHT // 2)
+                human_paddle = Paddle(x_pos=DisplayConsts.SCREEN_WIDTH - 50,
+                                      y_pos=DisplayConsts.SCREEN_HEIGHT // 2)
+
+            # check if game is over
+            if human_paddle == GameConsts.MAX_SCORE:
+                display.show_winner("Human wins!")
+                sleep(3)
+                break
+
+            if ai_paddle == GameConsts.MAX_SCORE:
+                display.show_winner("AI wins!")
+                sleep(3)
+                break
 
     @staticmethod
     def train(config_file):
