@@ -25,13 +25,13 @@ class Paddle(Position, Velocity):
         move(self):
          Calculates the next position of the Paddle based on its velocity.
     """
-    def __init__(self, x_pos: int = 900, y_pos: int = 300):
+    def __init__(self, x_pos: int = 900, y_pos: int = 300, size: int = PaddleConsts.PADDLE_SIZE):
         """
             Constructs all the necessary attributes for the Paddle object.
         """
         Position.__init__(self, x_pos=x_pos, y_pos=y_pos)
         Velocity.__init__(self, x_vel=0, y_vel=PaddleConsts.PADDLE_VELOCITY)
-        self.__set_size()
+        self.__set_size(size=size)
 
     def _set_position(self, x_pos: int, y_pos: int):
         """
@@ -47,11 +47,11 @@ class Paddle(Position, Velocity):
         self.x_vel = x_vel
         self.y_vel = y_vel
 
-    def __set_size(self):
+    def __set_size(self, size: int):
         """
             Sets size of the Paddle object.
         """
-        self.m_size = PaddleConsts.PADDLE_SIZE
+        self.m_size = size
 
     def move(self, y_vel: int):
         """
