@@ -37,7 +37,7 @@ class PaddleConsts:
 
 
 class GameConsts:
-    MAX_SCORE = 5
+    MAX_SCORE = 3
 
 
 class Action(Enum):
